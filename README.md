@@ -74,3 +74,7 @@ tgeraser --session myaccount -p @username --entity-type user --delete-conversati
 ## Contributing
 
 If you have any issues or suggestions, please feel free to open an issue or submit a pull request.
+
+## License
+
+MIT
