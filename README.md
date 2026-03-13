@@ -15,9 +15,9 @@ go install github.com/en9inerd/go-tgeraser/cmd/tgeraser@latest
 You'll need `api_id` and `api_hash`, which you can obtain from [my.telegram.org](https://my.telegram.org/auth?to=apps).
 
 There are three ways to provide credentials:
-1. **CLI flags**: `--api-id` and `--api-hash`
-2. **Environment variables**: `TG_API_ID` and `TG_API_HASH`
-3. **Credentials file**: The tool will prompt you on first run and optionally save to `~/.tgeraser/credentials.json`
+1. **Environment variables**: `TG_API_ID` and `TG_API_HASH`
+2. **Credentials file**: `~/.tgeraser/credentials.json`
+3. **Interactive prompt**: The tool will prompt you on first run and optionally save to the credentials file
 
 Credentials file format:
 ```json
@@ -33,8 +33,6 @@ Credentials file format:
 tgeraser [flags]
 
 Flags:
-    --api-id INT                Telegram API ID (or TG_API_ID env var)
-    --api-hash STRING           Telegram API Hash (or TG_API_HASH env var)
     -d, --directory PATH        Session storage directory (default: ~/.tgeraser/)
     --session NAME              Session name
     --entity-type TYPE          Entity type: any, chat, channel, user (default: chat)

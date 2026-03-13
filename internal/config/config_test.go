@@ -113,8 +113,6 @@ func TestParseConfig(t *testing.T) {
 	t.Run("flags", func(t *testing.T) {
 		args := []string{
 			"tgeraser",
-			"--api-id", "12345",
-			"--api-hash", "abcdef",
 			"--entity-type", "user",
 			"-p", "alice,bob",
 			"-v",
@@ -126,12 +124,6 @@ func TestParseConfig(t *testing.T) {
 		cfg, err := ParseConfig(args, func(string) string { return "" })
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
-		}
-		if cfg.APIID != 12345 {
-			t.Errorf("APIID = %d, want 12345", cfg.APIID)
-		}
-		if cfg.APIHash != "abcdef" {
-			t.Errorf("APIHash = %q, want %q", cfg.APIHash, "abcdef")
 		}
 		if cfg.EntityType != "user" {
 			t.Errorf("EntityType = %q, want %q", cfg.EntityType, "user")

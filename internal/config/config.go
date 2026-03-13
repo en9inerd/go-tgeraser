@@ -52,8 +52,6 @@ func ParseConfig(args []string, getenv func(string) string) (*Config, error) {
 
 	fs := flag.NewFlagSet("tgeraser", flag.ContinueOnError)
 
-	apiID := fs.Int("api-id", getEnvInt("TG_API_ID", 0), "Telegram API ID")
-	apiHash := fs.String("api-hash", getEnv("TG_API_HASH", ""), "Telegram API Hash")
 	sessionDir := fs.String("directory", getEnv("TG_SESSION_DIR", "~/.tgeraser/"), "Session storage directory")
 	fs.StringVar(sessionDir, "d", getEnv("TG_SESSION_DIR", "~/.tgeraser/"), "Session storage directory (shorthand)")
 	sessionName := fs.String("session", "", "Session name")
@@ -113,8 +111,8 @@ func ParseConfig(args []string, getenv func(string) string) (*Config, error) {
 	}
 
 	return &Config{
-		APIID:              *apiID,
-		APIHash:            *apiHash,
+		APIID:              getEnvInt("TG_API_ID", 0),
+		APIHash:            getEnv("TG_API_HASH", ""),
 		SessionDir:         expandPath(*sessionDir),
 		SessionName:        *sessionName,
 		EntityType:         *entityType,
@@ -129,7 +127,7 @@ func ParseConfig(args []string, getenv func(string) string) (*Config, error) {
 	}, nil
 }
 
-// ResolveCredentials loads API credentials from flags, env, file, or interactive prompt.
+// ResolveCredentials loads API credentials from env, file, or interactive prompt.
 func (c *Config) ResolveCredentials() error {
 	if c.APIID != 0 && c.APIHash != "" {
 		return nil
