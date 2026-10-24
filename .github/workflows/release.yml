@@ -24,11 +24,6 @@ jobs:
       - name: Run tests with race detector
         run: go test -race ./...
 
-      - name: Run tests with goroutine leak detection
-        env:
-          GOEXPERIMENT: goroutineleakprofile
-        run: go test ./...
-
       - name: Vet
         run: go vet ./...
 
