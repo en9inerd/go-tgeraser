@@ -10,17 +10,16 @@ import (
 	"runtime"
 	"runtime/debug"
 	"syscall"
+	"time"
 
-	"github.com/en9inerd/go-pkgs/promptio"
 	"github.com/en9inerd/go-tgeraser/internal/config"
 	"github.com/en9inerd/go-tgeraser/internal/eraser"
 	"github.com/en9inerd/go-tgeraser/internal/log"
+	"github.com/en9inerd/go-tgeraser/internal/login"
 	"github.com/gotd/contrib/middleware/floodwait"
 	"github.com/gotd/td/session"
 	"github.com/gotd/td/telegram"
-	"github.com/gotd/td/telegram/auth"
 	"github.com/gotd/td/telegram/dcs"
-	"github.com/gotd/td/tg"
 )
 
 var version = "dev"
@@ -75,7 +74,7 @@ func run(ctx context.Context, args []string, getenv func(string) string) error {
 	ctx, cancel := signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM)
 	defer cancel()
 
-	waiter := floodwait.NewSimpleWaiter().WithMaxRetries(10)
+	waiter := floodwait.NewSimpleWaiter().WithMaxRetries(10).WithMaxWait(1 * time.Minute)
 
 	var resolver dcs.Resolver
 	if cfg.ProxyAddr != "" {
@@ -104,11 +103,7 @@ func run(ctx context.Context, args []string, getenv func(string) string) error {
 
 	fmt.Println("Connecting to Telegram servers...")
 	return client.Run(ctx, func(ctx context.Context) error {
-		flow := auth.NewFlow(
-			&terminalAuth{},
-			auth.SendCodeOptions{},
-		)
-		if err := client.Auth().IfNecessary(ctx, flow); err != nil {
+		if err := login.Authorize(ctx, client.Auth()); err != nil {
 			return fmt.Errorf("auth failed: %w", err)
 		}
 
@@ -130,26 +125,4 @@ func main() {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(1)
 	}
-}
-
-type terminalAuth struct{}
-
-func (a *terminalAuth) Phone(ctx context.Context) (string, error) {
-	return promptio.ReadLine(ctx, "Enter your phone number: ")
-}
-
-func (a *terminalAuth) Code(ctx context.Context, _ *tg.AuthSentCode) (string, error) {
-	return promptio.ReadLine(ctx, "Enter the code you just received: ")
-}
-
-func (a *terminalAuth) Password(ctx context.Context) (string, error) {
-	return promptio.ReadPassword(ctx, "Two-step verification is enabled. Enter your password: ")
-}
-
-func (a *terminalAuth) AcceptTermsOfService(_ context.Context, _ tg.HelpTermsOfService) error {
-	return nil
-}
-
-func (a *terminalAuth) SignUp(_ context.Context) (auth.UserInfo, error) {
-	return auth.UserInfo{}, fmt.Errorf("sign-up is not supported; use an existing Telegram account")
 }

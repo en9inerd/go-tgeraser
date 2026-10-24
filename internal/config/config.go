@@ -231,7 +231,7 @@ func (c *Config) ResolveSession() (string, error) {
 		return filepath.Join(c.SessionDir, c.SessionName+".session"), nil
 	}
 
-	fmt.Print("Enter session name: ")
+	fmt.Print("Enter session name (any label for the local session file): ")
 	if !scanner.Scan() {
 		return "", errors.New("failed to read session name")
 	}
