@@ -28,6 +28,9 @@ func Authorize(ctx context.Context, api *auth.Client) error {
 	}
 
 	sent, err := api.SendCode(ctx, phone, auth.SendCodeOptions{})
+	if tg.IsAuthRestart(err) {
+		sent, err = api.SendCode(ctx, phone, auth.SendCodeOptions{})
+	}
 	if err != nil {
 		return fmt.Errorf("send login code: %w", err)
 	}
